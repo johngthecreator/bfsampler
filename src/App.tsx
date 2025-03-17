@@ -1,14 +1,33 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { createBrowserRouter, RouterProvider } from "react-router";
+import { Home, Splitter } from "@/views";
+import Session from './views/Session';
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    errorElement: <div> Something went wrong!</div>,
+    children: [
+      {
+        index: true,
+        element: <Home />,
+      },
+      {
+        path: "splitter",
+        element: <Splitter />,
+      },
+      {
+        path: "sessions",
+        element: <Session />,
+      },
+    ],
+  },
+]);
+
 
 function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <div className='bg-blue-600'>
-    </div>
-  )
+    return (
+        <RouterProvider router={router} />
+    );
 }
 
-export default App
+export default App;

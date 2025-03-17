@@ -10,12 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@electric-sql/pglite": "^0.2.17",
-    "@electric-sql/pglite-react": "^0.2.17",
     "@radix-ui/react-dialog": "^1.1.6",
     "@tailwindcss/vite": "^4.0.7",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dexie": "^4.0.11",
+    "dexie-react-hooks": "^1.1.7",
     "lucide-react": "^0.475.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
