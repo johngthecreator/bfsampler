@@ -1,16 +1,31 @@
 import MenuBar from "@/components/MenuBar";
 import ToneSequencePlayer from "@/components/SequencePlayer";
-import { useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
+import { useLiveQuery } from "dexie-react-hooks";
+import { useSearchParams, useNavigate } from "react-router";
+import { DopplerSession, getSessionById } from "@/lib/db";
 
 export default function Home(){
     const [octave, setOctave] = useState<number>(1)
     const [currTrack, setCurrTrack] = useState<string>('T1')
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
     const tracks = {
         "T1":{"sequence":[null,null,null,null,null,null,null,null],"active":[null,null,null,null,null,null,null,null]},
         "T2":{"sequence":[null,null,null,null,null,null,null,null],"active":[null,null,null,null,null,null,null,null]},
         "T3":{"sequence":[null,null,null,null,null,null,null,null],"active":[null,null,null,null,null,null,null,null]},
         "T4":{"sequence":[null,null,null,null,null,null,null,null],"active":[null,null,null,null,null,null,null,null]},
     }
+
+    const session_id = searchParams.get('id')
+
+    useEffect(()=>{
+        if(!session_id){
+            navigate('/sessions')
+        }
+    },[navigate, session_id])
+
+    const session = useLiveQuery(() => getSessionById(Number(session_id))) as DopplerSession;
 
     const iterateOctave = () => {
         if(octave < 9){
@@ -55,9 +70,8 @@ export default function Home(){
     }
 
     return(
-        <div className="h-dvh w-full flex flex-col justify-center items-center bg-[#FDF7ED] p-5 overflow-y-auto">
-            <MenuBar />
-            <div className="w-full h-full flex flex-col gap-5 md:flex-row">
+        <div className="h-dvh w-full flex flex-col justify-center items-center bg-[#FDF7ED] pt-5 overflow-y-auto">
+            <div className="w-full h-full flex flex-col gap-5 md:flex-row px-5">
                 <div className="flex-1 w-full flex flex-row md:flex-col gap-3">
                     <button
                         onClick={() => setCurrTrack("T1")}
@@ -90,7 +104,7 @@ export default function Home(){
                     >
                         OCT {octave}
                     </button>
-                    <ToneSequencePlayer sequence1={state['T1'].sequence} sequence2={state['T2'].sequence} sequence3={state['T3'].sequence} sequence4={state['T4'].sequence}/>
+                    <ToneSequencePlayer sequence1={state['T1'].sequence} sequence2={state['T2'].sequence} sequence3={state['T3'].sequence} sequence4={state['T4'].sequence} session={session} />
 
                     </div>
                 </div>
@@ -108,6 +122,7 @@ export default function Home(){
                     })}
                 </div>
             </div>
+            <MenuBar id={Number(session_id)} />
         </div>
     )
 }

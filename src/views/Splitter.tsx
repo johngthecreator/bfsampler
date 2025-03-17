@@ -1,11 +1,30 @@
 import { useSplitAudio } from "@/hooks";
 import MenuBar from "@/components/MenuBar";
 import AudioPlayer from "@/components/AudioPlayer";
-import { ChangeEvent, DragEvent, useState } from "react";
+import { ChangeEvent, DragEvent, useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router";
+import { useLiveQuery } from "dexie-react-hooks";
+import { DopplerSession, getSessionById } from "@/lib/db";
 
 export default function Splitter() {
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+    const session_id = searchParams.get('id')
+
+    console.log(session_id)
+    const session = useLiveQuery(() => getSessionById(Number(session_id))) as DopplerSession;
+
+    useEffect(()=>{
+        if(!session_id || !session){
+            navigate('/sessions')
+        }
+    },[navigate, session_id])
+
+
+    console.log(Math.round(30 / session?.tempo * 1000))
+    
   const { samples, isProcessing, error, splitAudio } = useSplitAudio({
-    chunkDurationMs: 1000 // optional, defaults to 1000ms
+    chunkDurationMs: Math.round(30 / session?.tempo * 1000) // optional, defaults to 1000ms
   });
   const [isDragging, setIsDragging] = useState(false);
 
@@ -42,9 +61,8 @@ export default function Splitter() {
   };
 
   return (
-    <div className="h-dvh w-full flex flex-col items-center bg-[#FDF7ED] p-5 overflow-y-auto">
-      <MenuBar />
-      <div className="w-full max-w-md mb-8">
+    <div className="h-dvh w-full flex flex-col items-center bg-[#FDF7ED] pt-5 overflow-y-auto">
+      <div className="w-full max-w-md mb-8 px-5">
         <div
           className={`w-full h-48 border-2 border-dashed rounded-lg flex flex-col items-center justify-center p-4 transition-colors ${
             isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
@@ -114,6 +132,7 @@ export default function Splitter() {
           </div>
         )}
       </div>
+        <MenuBar id={Number(session_id)} />
     </div>
   );
 }

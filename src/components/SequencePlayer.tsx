@@ -1,3 +1,4 @@
+import { DopplerSession } from '@/lib/db';
 import { useState, useEffect, useRef } from 'react';
 import * as Tone from 'tone';
 
@@ -6,9 +7,10 @@ interface ToneSequencePlayerProps {
   sequence2: (string | null)[];
   sequence3: (string | null)[];
   sequence4: (string | null)[];
+  session: DopplerSession
 }
 
-export default function ToneSequencePlayer({ sequence1, sequence2, sequence3, sequence4 }: ToneSequencePlayerProps) {
+export default function ToneSequencePlayer({ sequence1, sequence2, sequence3, sequence4, session }: ToneSequencePlayerProps) {
   
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isQueued, setIsQueued] = useState<boolean>(false);
@@ -20,8 +22,6 @@ export default function ToneSequencePlayer({ sequence1, sequence2, sequence3, se
   const sequenceRef2 = useRef<Tone.Sequence<string | null> | null>(null);
   const sequenceRef3 = useRef<Tone.Sequence<string | null> | null>(null);
   const sequenceRef4 = useRef<Tone.Sequence<string | null> | null>(null);
-
-  const measureCount = 2;
 
   // Assuming 'notes' is defined somewhere in your component or imported
   useEffect(() => {
@@ -123,7 +123,7 @@ export default function ToneSequencePlayer({ sequence1, sequence2, sequence3, se
       }
   }
 
-  const scheduleNextTrack = (delayInMeasures: number) => {
+  const scheduleNextTrack = () => {
     if (sequenceRef1.current) {
       setIsQueued(true);
       const transport = Tone.getTransport();
@@ -134,7 +134,7 @@ export default function ToneSequencePlayer({ sequence1, sequence2, sequence3, se
       const secondsPerMeasure = (timeSignature as number / (bpm / 60)) * (4 / (timeSignature as number));
   
       // Calculate the total delay in seconds
-      const delayInSeconds = delayInMeasures * secondsPerMeasure;
+      const delayInSeconds = session.measure_queue * secondsPerMeasure;
   
       // Schedule the next track using setTimeout
       setTimeout(queueNextTrack, delayInSeconds * 1000); // Convert to milliseconds
@@ -152,7 +152,7 @@ export default function ToneSequencePlayer({ sequence1, sequence2, sequence3, se
         createSequence3(); // Recreate sequence before playing
         createSequence4(); // Recreate sequence before playing
         Tone.getTransport().start();
-        Tone.getTransport().bpm.value = 160;
+        Tone.getTransport().bpm.value = session.tempo;
         if (sequenceRef2.current && sequenceRef1.current && sequenceRef3.current && sequenceRef4.current) {
           sequenceRef1.current.start();
           sequenceRef2.current.start();
@@ -188,7 +188,7 @@ export default function ToneSequencePlayer({ sequence1, sequence2, sequence3, se
         {isPlaying ? 'Stop' : 'Play'}
     </button>
     <button
-        onClick={() => scheduleNextTrack(measureCount)}
+        onClick={scheduleNextTrack}
         className={`w-20 md:w-full flex-grow p-3 ${ isQueued ? 'bg-black text-white' : 'bg-[#FDF7ED] text-black'} outline-1 outline-black text-center`}
         disabled={isQueued}
     >

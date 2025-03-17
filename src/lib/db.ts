@@ -28,3 +28,26 @@ db.version(1).stores({
 
 export type { DopplerSession };
 export { db };
+
+// CRUD Operations for sessions 
+
+export const createNewSession = (session_name: string, tempo: number, measure_queue: number) => {
+    db.doppler.add({
+        session_name,
+        tempo,
+        measure_queue,
+        uncut_audio: null,
+        sound_t1: null,
+        sound_t2: null,
+        sound_t3: null,
+        sound_t4: null
+    })
+}
+
+export const getAllSessions = () => {
+    return db.doppler.toArray();
+}
+
+export const getSessionById = (session_id: number) => {
+    return db.doppler.where('id').equals(session_id).first();
+}
