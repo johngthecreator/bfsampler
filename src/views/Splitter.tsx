@@ -12,13 +12,14 @@ export default function Splitter() {
     const session_id = searchParams.get('id')
 
     console.log(session_id)
+
     const session = useLiveQuery(() => getSessionById(Number(session_id))) as DopplerSession;
 
     useEffect(()=>{
-        if(!session_id || !session){
+        if(!session_id){
             navigate('/sessions')
         }
-    },[navigate, session_id])
+    },[navigate, session, session_id])
 
 
     console.log(Math.round(30 / session?.tempo * 1000))
@@ -126,6 +127,7 @@ export default function Splitter() {
                   key={index} 
                   audioBlob={sample} 
                   index={index} 
+                  sessionId={session?.id}
                 />
               ))}
             </div>

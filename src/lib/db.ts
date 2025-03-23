@@ -49,5 +49,6 @@ export const getAllSessions = () => {
 }
 
 export const getSessionById = (session_id: number) => {
+    console.log(session_id)
     return db.doppler.where('id').equals(session_id).first();
 }

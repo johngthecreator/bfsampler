@@ -2,6 +2,7 @@
 import { createNewSession, getAllSessions } from "@/lib/db"
 import MenuBar from "@/components/MenuBar"
 import { useLiveQuery } from "dexie-react-hooks"
+import { Link } from "react-router";
 export default function Session() {
     const sessions = useLiveQuery(getAllSessions);
 
@@ -12,11 +13,11 @@ export default function Session() {
             <div className="overflow-y-auto">
                 {sessions && sessions.map((session) => {
                         return (
-                            <div key={session.id}>
+                            <Link to={`/?id=${session.id}`} key={session.id}>
                                 <p>{session.session_name}</p>
                                 <p>{session.tempo}</p>
                                 <p>{session.id}</p>
-                            </div>
+                            </Link>
                         )
                     })  
                 }

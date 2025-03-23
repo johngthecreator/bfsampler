@@ -1,13 +1,16 @@
+import { db } from '@/lib/db';
 import { useState, useEffect, useRef } from 'react';
 
 interface AudioPlayerProps {
   audioBlob: Blob;
   index?: number;
+  sessionId?: number;
 }
 
-export default function AudioPlayer({ audioBlob, index }: AudioPlayerProps) {
+export default function AudioPlayer({ audioBlob, index, sessionId }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [objectUrl, setObjectUrl] = useState<string | null>(null);
+  const [selectedTrack, setSelectedTrack] = useState<string>("");
   const audioRef = useRef<HTMLAudioElement>(null);
   
   useEffect(() => {
@@ -34,6 +37,24 @@ export default function AudioPlayer({ audioBlob, index }: AudioPlayerProps) {
   
   const handleAudioEnded = () => {
     setIsPlaying(false);
+  };
+
+  const handleTrackTypeChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newTrackType = e.target.value;
+    setSelectedTrack(newTrackType);
+    
+    if (sessionId) {
+      try {
+        // Simply update the session with the new track assignment
+        await db.doppler.update(sessionId, { 
+          [newTrackType]: audioBlob 
+        });
+        
+        // Notify parent component
+      } catch (error) {
+        console.error("Failed to update track type:", error);
+      }
+    }
   };
   
   return (
@@ -64,6 +85,19 @@ export default function AudioPlayer({ audioBlob, index }: AudioPlayerProps) {
           className="hidden"
         />
       </div>
+      <div className="ml-auto">
+          <select 
+            value={selectedTrack}
+            onChange={handleTrackTypeChange}
+            className="block w-24 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+          >
+            <option value="" disabled>Assign to</option>
+            <option value="sound_t1">T1</option>
+            <option value="sound_t2">T2</option>
+            <option value="sound_t3">T3</option>
+            <option value="sound_t4">T4</option>
+          </select>
+        </div>
     </div>
   );
 }

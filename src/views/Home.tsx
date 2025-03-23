@@ -6,7 +6,7 @@ import { useSearchParams, useNavigate } from "react-router";
 import { DopplerSession, getSessionById } from "@/lib/db";
 
 export default function Home(){
-    const [octave, setOctave] = useState<number>(1)
+    const [octave, setOctave] = useState<number>(4)
     const [currTrack, setCurrTrack] = useState<string>('T1')
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();

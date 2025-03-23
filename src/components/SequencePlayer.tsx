@@ -28,22 +28,22 @@ export default function ToneSequencePlayer({ sequence1, sequence2, sequence3, se
     // Create synth once
     samplerRef1.current = new Tone.Sampler({
       urls: {
-        C1: "./hihat.mp3",
+        C4: session?.sound_t1 ? URL.createObjectURL(session?.sound_t1) :  "./hihat.mp3",
     },
     }).toDestination();
     samplerRef2.current = new Tone.Sampler({
       urls: {
-        C1: "./clap.mp3",
+        C4: session?.sound_t2 ? URL.createObjectURL(session?.sound_t2) :  "./clap.mp3",
     },
     }).toDestination();
     samplerRef3.current = new Tone.Sampler({
       urls: {
-        C1: "./snare.mp3",
+        C4: session?.sound_t3 ? URL.createObjectURL(session?.sound_t3) :  "./snare.mp3",
     },
     }).toDestination();
     samplerRef4.current = new Tone.Sampler({
       urls: {
-        C1: "kick.mp3",
+        C4: session?.sound_t4 ? URL.createObjectURL(session?.sound_t4) :  "./kick.mp3",
     },
     }).toDestination();
 
@@ -62,7 +62,7 @@ export default function ToneSequencePlayer({ sequence1, sequence2, sequence3, se
         sequenceRef4.current.dispose();
       }
     };
-  }, []);
+  }, [session]);
 
   const createSequence1 = (): void => {
     if (sequenceRef1.current) {
